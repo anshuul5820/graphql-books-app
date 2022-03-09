@@ -1,7 +1,13 @@
 const graphql = require('graphql')
 const _ = require('lodash')
 
-const { GraphQLObjectType, GraphQLString } = graphql
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLID,
+  GraphQLSchema,
+  GraphQLInt,
+} = graphql
 
 //dummy data
 var books = [
@@ -10,12 +16,29 @@ var books = [
   { name: 'gazar', genre: 'romance', id: '3' },
 ]
 
+var authors = [
+  { name: 'Joeeeeee Biden', age: 11, id: '1' },
+  { name: 'Vladimir Putin', age: 23, id: '2' },
+  { name: 'Zachinda Arden', age: 44, id: '3' },
+]
+
 const BookType = new GraphQLObjectType({
   name: 'Book',
   fields: () => ({
-    id: { type: GraphQLString },
+    id: { type: GraphQLID }, //both nos and strings can be used here
     name: { type: GraphQLString },
     genre: { type: GraphQLString },
+  }),
+  //all fields related to 'Book'
+  //wrapped in a fn bcoz when multiple types are present, prevents reference functions
+})
+
+const AuthorType = new GraphQLObjectType({
+  name: 'Author',
+  fields: () => ({
+    id: { type: GraphQLID }, //both nos and strings can be used here
+    name: { type: GraphQLString },
+    age: { type: GraphQLInt },
   }),
   //all fields related to 'Book'
   //wrapped in a fn bcoz when multiple types are present, prevents reference functions
@@ -28,7 +51,7 @@ const RootQuery = new GraphQLObjectType({
     book: {
       type: BookType,
       args: {
-        id: { type: GraphQLString },
+        id: { type: GraphQLID },
       },
       resolve(parent, args) {
         //handles what to return for a query
@@ -39,11 +62,22 @@ const RootQuery = new GraphQLObjectType({
         })
       },
     },
+    author: {
+      type: AuthorType,
+      args: {
+        id: { type: GraphQLID },
+      },
+      resolve(parent, args) {
+        return _.find(authors, {
+          id: args.id,
+        })
+      },
+    },
   },
   //book(id:'abc')
 })
 
-module.exports = new graphql.GraphQLSchema({
+module.exports = new GraphQLSchema({
   query: RootQuery,
 })
 
