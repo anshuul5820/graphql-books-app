@@ -2,10 +2,9 @@ import { useQuery } from '@apollo/client'
 
 import React from 'react'
 import { getBookQuery } from '../queries/queries'
-import BookList from './BookList'
 
 const BookDetails = ({ bookId }) => {
-  if (!bookId) return <p>No id present</p>
+  if (!bookId) return <></>
   const { loading, error, data } = useQuery(getBookQuery, {
     variables: {
       id: bookId,
